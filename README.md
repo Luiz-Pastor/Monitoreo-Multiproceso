@@ -1,1 +1,1 @@
-# Monitoreo-Multiproceso
+# Multi-process monitoring
