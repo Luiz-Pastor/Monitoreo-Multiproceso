@@ -1,0 +1,9 @@
+# Trash
+.vscode
+.DS_Store
+
+# Compilation objects
+obj/
+
+# Executables
+miner
