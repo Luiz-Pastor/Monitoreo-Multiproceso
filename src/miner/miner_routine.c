@@ -87,6 +87,7 @@ static long	init_miners(t_miner *miners,
 int	miner_routine(t_args *arguments, mqd_t queue)
 {
 	long			i, threads_created;
+	pid_t			pid;
 	atomic_long		f_active, f_search, target, old_target, result;
 	t_miner *miners;
 
@@ -102,6 +103,8 @@ int	miner_routine(t_args *arguments, mqd_t queue)
 		return end_search(-1, miners, "Threads creation");
 
 	/* Loop to search the number of the n rounds */
+	pid = getpid();
+	printf("[%d] Generating blocks...\n", pid);
 	old_target = ATOMIC_VAR_INIT(INIT_TARGET);
 	for (i = 0; i < arguments->rounds; i++)
 	{
@@ -122,6 +125,7 @@ int	miner_routine(t_args *arguments, mqd_t queue)
 		if (i != arguments->rounds - 1)
 			usleep(arguments->lag * 1000);
 	}
+	printf("[%d] Finishing\n", pid);
 
 	/* Collecting the threads and freed the memory used */
 	atomic_store(&f_active, 0);
