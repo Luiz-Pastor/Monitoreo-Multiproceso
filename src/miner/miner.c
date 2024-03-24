@@ -16,9 +16,25 @@ static t_error	save_arguments(int argc, char **argv, t_args *args)
 	return NONE;	
 }
 
+static int	init_msg()
+{
+	mqd_t			queue;
+	struct mq_attr	atr;
+
+	/* Flags of the msg queue */
+	atr.mq_flags = 0;
+	atr.mq_curmsgs = 0;
+	atr.mq_maxmsg = MAX_MSG;
+	atr.mq_msgsize = sizeof(t_msg);
+
+	queue = mq_open(MSG_QUEUE_NAME, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR, &atr);
+	return queue;
+}
+
 int main(int argc, char *argv[])
 {
 	int		status;
+	mqd_t	queue;
 	t_error	args_error;
 	t_args arguments;
 
@@ -28,12 +44,19 @@ int main(int argc, char *argv[])
 	if (args_error)
 		return (arguments_error(args_error, argv));
 
-	/* TODO: Open the msg region */
+	/* Open the msg region */
+	queue = init_msg();
+	if (queue == -1)
+	{
+		perror("Queue creation");
+		return (1);
+	}
 
-	/* Bucle de mineria */
-	status = miner_routine(&arguments);
+	/* Miner loop */
+	status = miner_routine(&arguments, queue);
 
-	/* TODO: Freed the msg section */
+	/* Freed the msg section */
+	mq_close(queue);
 	
 	return status;
 }

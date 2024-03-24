@@ -1,6 +1,23 @@
 #include "../../include/miner.h"
 
-void	*miner_search(void *arg) {
+static int	end_search(long threads_created, t_miner *miners, char *msg)
+{
+	long	i;
+	
+	/* If there is a message, the error is printed */
+	if (msg)
+		perror(msg);
+
+	/* Wait for all the threads and freed the memory */
+	for (i = 0; i < threads_created; i++)
+		pthread_join(miners[i].thread, NULL);
+	if (miners)
+		free(miners);
+	
+	return msg ? 1 : 0;
+}
+
+static void	*miner_search(void *arg) {
 	long	i;
 	t_miner	*miner;
 
@@ -26,7 +43,7 @@ void	*miner_search(void *arg) {
 	return (NULL);
 }
 
-long	init_miners(t_miner *miners,
+static long	init_miners(t_miner *miners,
 					atomic_long *f_active, atomic_long *f_search, atomic_long *target, atomic_long *result)
 {
 	long		i, threads_created;
@@ -67,7 +84,17 @@ long	init_miners(t_miner *miners,
 	return threads_created;
 }
 
-int	miner_routine(t_args *arguments)
+int	send_msg(long target, long result, mqd_t queue)
+{
+	t_msg	msg;
+
+	msg.target = target;
+	msg.result = result;
+
+	return mq_send(queue, (const char *)&msg, sizeof(t_msg), 0);
+}
+
+int	miner_routine(t_args *arguments, mqd_t queue)
 {
 	long			i, threads_created;
 	atomic_long		f_active, f_search, target, old_target, result;
@@ -77,19 +104,12 @@ int	miner_routine(t_args *arguments)
 	/* Creating the main array struct */
 	miners = malloc(MAX_THREADS * sizeof(t_miner));
 	if (!miners)
-	{
-		perror("malloc");
-		return 1;
-	}
+		return end_search(-1, NULL, "malloc");
 
 	/* Init the miners with data */
 	threads_created = init_miners(miners, &f_active, &f_search, &target, &result);
 	if (threads_created == 0)
-	{
-		free(miners);
-		perror("Threads");
-		return  1;
-	}
+		return end_search(-1, miners, "Threads creation");
 
 	/* Loop to search the number of the n rounds */
 	old_target = ATOMIC_VAR_INIT(INIT_TARGET);
@@ -103,8 +123,9 @@ int	miner_routine(t_args *arguments)
 		atomic_store(&f_search, 1);
 		while (atomic_load(&f_search));
 
-		/* FIXME: Printed the result. The numbers must be sended by a msg */
-		printf("Resultado: %07ld ----> %07ld\n", atomic_load(&target), atomic_load(&result));
+		/* The target and the result are send to the msg queue to be checked */
+		if (send_msg(atomic_load(&target), atomic_load(&result), queue))
+			return end_search(threads_created, miners, "Sending message");
 
 		/* Saved the result for the next round and putted lag */
 		atomic_store(&old_target, atomic_load(&result));
@@ -114,9 +135,6 @@ int	miner_routine(t_args *arguments)
 
 	/* Collecting the threads and freed the memory used */
 	atomic_store(&f_active, 0);
-	for (i = 0; i < threads_created; i++)
-		pthread_join(miners[i].thread, NULL);
-	free(miners);
 
-	return 0;
+	return end_search(threads_created, miners, NULL);
 }

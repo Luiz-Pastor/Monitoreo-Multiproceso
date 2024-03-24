@@ -51,6 +51,6 @@ typedef struct s_miner {
 int	arguments_error(t_error error, char **argv);
 
 /* Function loop to found targets */
-int	miner_routine(t_args *arguments);
+int	miner_routine(t_args *arguments, mqd_t queue);
 
 #endif
