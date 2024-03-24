@@ -52,6 +52,7 @@ clean_tmpfile:
 
 clean:
 	@rm -rf obj/
+	@rm -rf /dev/mqueue/miner
 
 fclean: clean
 	@rm -rf $(MINER)
@@ -60,7 +61,7 @@ re: fclean all
 
 #################################################
 
-ARGS=10 10
+ARGS=6 10
 
 r: run
 run: all
