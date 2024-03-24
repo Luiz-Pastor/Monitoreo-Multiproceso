@@ -15,9 +15,18 @@ int	msg_init()
 	return queue;
 }
 
-int	msg_destroy(mqd_t queue)
+int	msg_destroy(mqd_t queue, int delete)
 {
-	return (mq_close(queue) != 0);
+	if (mq_close(queue))
+		return 1;
+	
+	if (delete)
+	{
+		if (mq_unlink(MSG_QUEUE_NAME))
+			return 1;
+	}
+	
+	return (0);
 }
 
 int	msg_send(long target, long result, mqd_t queue)

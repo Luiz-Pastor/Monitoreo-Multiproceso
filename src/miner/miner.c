@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 	status = miner_routine(&arguments, queue);
 
 	/* Freed the msg section */
-	msg_destroy(queue);
+	msg_destroy(queue, NO_DELETE);
 	
 	return status;
 }
