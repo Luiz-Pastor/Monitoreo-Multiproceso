@@ -84,16 +84,6 @@ static long	init_miners(t_miner *miners,
 	return threads_created;
 }
 
-int	send_msg(long target, long result, mqd_t queue)
-{
-	t_msg	msg;
-
-	msg.target = target;
-	msg.result = result;
-
-	return mq_send(queue, (const char *)&msg, sizeof(t_msg), 0);
-}
-
 int	miner_routine(t_args *arguments, mqd_t queue)
 {
 	long			i, threads_created;
@@ -124,7 +114,7 @@ int	miner_routine(t_args *arguments, mqd_t queue)
 		while (atomic_load(&f_search));
 
 		/* The target and the result are send to the msg queue to be checked */
-		if (send_msg(atomic_load(&target), atomic_load(&result), queue))
+		if (msg_send(atomic_load(&target), atomic_load(&result), queue))
 			return end_search(threads_created, miners, "Sending message");
 
 		/* Saved the result for the next round and putted lag */

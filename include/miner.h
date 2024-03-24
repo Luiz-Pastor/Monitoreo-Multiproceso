@@ -13,8 +13,7 @@
 # include <pthread.h>
 
 /* Msg libs */
-# include <mqueue.h>
-# include <sys/stat.h>
+# include "msg_utils.h"
 
 
 /* Project macros */

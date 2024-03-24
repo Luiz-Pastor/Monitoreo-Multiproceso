@@ -15,9 +15,4 @@
 
 # define MAX_MSG	6				/*!< Max number of msg on the queue*/
 
-typedef struct e_msg {
-	long	target;
-	long	result;
-} t_msg;
-
 #endif
