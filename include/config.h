@@ -13,6 +13,6 @@
 
 # define MSG_QUEUE_NAME "/miner"	/*!< Name of the message queue */
 
-# define MAX_MSG	6				/*!< Max number of msg on the queue*/
+# define MAX_MSG	7				/*!< Max number of msg on the queue*/
 
 #endif
