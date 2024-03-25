@@ -30,18 +30,19 @@ int main(int argc, char *argv[])
 		return (arguments_error(args_error, argv));
 
 	/* Open the msg region */
-	queue = msg_init();
+	queue = msg_init(MINER);
 	if (queue == -1)
 	{
 		perror("Queue creation");
 		return (1);
 	}
 
-	/* Miner loop */
+	/* Miner loop. If there is any problem, the error is printed inside */
 	status = miner_routine(&arguments, queue);
 
 	/* Freed the msg section */
 	msg_destroy(queue, NO_DELETE);
 	
+	/* Exit with the search end status */
 	return status;
 }

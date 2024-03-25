@@ -1,6 +1,7 @@
 #ifndef MINER_H
 # define MINER_H
 
+/* Generic libs */
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
@@ -9,12 +10,11 @@
 # include <fcntl.h>
 
 /* Threads lib */
-#include <stdatomic.h>
+# include <stdatomic.h>	/* Lib to use atomic variables*/
 # include <pthread.h>
 
 /* Msg libs */
 # include "msg_utils.h"
-
 
 /* Project macros */
 # include "config.h"

@@ -1,8 +1,8 @@
 # include "../../include/msg_utils.h"
 
-int	msg_init()
+int	msg_init(int op_mode)
 {
-	mqd_t			queue;
+	mqd_t			queue = -1;
 	struct mq_attr	atr;
 
 	/* Flags of the msg queue */
@@ -11,7 +11,10 @@ int	msg_init()
 	atr.mq_maxmsg = MAX_MSG;
 	atr.mq_msgsize = sizeof(t_msg);
 
-	queue = mq_open(MSG_QUEUE_NAME, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR, &atr);
+	if (op_mode == MINER)
+		queue = mq_open(MSG_QUEUE_NAME, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR, &atr);
+	else if (op_mode == MONITOR)
+		queue = mq_open(MSG_QUEUE_NAME, O_RDONLY, S_IRUSR | S_IWUSR, &atr);
 	return queue;
 }
 
@@ -37,4 +40,9 @@ int	msg_send(long target, long result, mqd_t queue)
 	msg.result = result;
 
 	return mq_send(queue, (const char *)&msg, sizeof(t_msg), 0);
+}
+
+int	msg_recieve(t_msg *msg, mqd_t queue)
+{
+	return mq_receive(queue, (char *)msg, sizeof(t_msg), 0);
 }
