@@ -12,7 +12,7 @@ int	msg_init(int op_mode)
 	atr.mq_msgsize = sizeof(t_msg);
 
 	if (op_mode == MINER)
-		queue = mq_open(MSG_QUEUE_NAME, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR, &atr);
+		queue = mq_open(MSG_QUEUE_NAME, O_WRONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR, &atr);
 	else if (op_mode == MONITOR)
 		queue = mq_open(MSG_QUEUE_NAME, O_RDONLY, S_IRUSR | S_IWUSR, &atr);
 	return queue;
