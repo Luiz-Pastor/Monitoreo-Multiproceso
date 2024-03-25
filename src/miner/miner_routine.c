@@ -125,10 +125,15 @@ int	miner_routine(t_args *arguments, mqd_t queue)
 		if (i != arguments->rounds - 1)
 			usleep(arguments->lag * 1000);
 	}
-	printf("[%d] Finishing\n", pid);
 
 	/* Collecting the threads and freed the memory used */
 	atomic_store(&f_active, 0);
+
+	/* Send of the finish block --> (END_VALUE, END_VALUE) */
+	msg_send(END_VALUE, END_VALUE, queue);
+
+	/* Prnt the final msg */
+	printf("[%d] Finishing\n", pid);
 
 	return end_search(threads_created, miners, NULL);
 }
