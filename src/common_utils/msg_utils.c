@@ -8,7 +8,7 @@ int	msg_init(int op_mode)
 	/* Flags of the msg queue */
 	atr.mq_flags = 0;
 	atr.mq_curmsgs = 0;
-	atr.mq_maxmsg = MAX_MSG;
+	atr.mq_maxmsg = MSG_LENGTH;
 	atr.mq_msgsize = sizeof(t_msg);
 
 	if (op_mode == MINER)
