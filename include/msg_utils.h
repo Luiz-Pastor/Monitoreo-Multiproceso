@@ -6,13 +6,6 @@
 # include <mqueue.h>
 # include <sys/stat.h>
 
-# define MINER		0
-# define MONITOR	1
-
-# define DELETE		1
-# define NO_DELETE	0
-# define END_VALUE -1
-
 typedef struct e_msg {
 	long	target;
 	long	result;

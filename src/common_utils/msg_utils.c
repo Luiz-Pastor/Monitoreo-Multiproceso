@@ -13,7 +13,7 @@ int	msg_init(int op_mode)
 
 	if (op_mode == MINER)
 		queue = mq_open(MSG_QUEUE_NAME, O_WRONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR, &atr);
-	else if (op_mode == MONITOR)
+	else if (op_mode == MONITOR || op_mode == CHECKER)
 		queue = mq_open(MSG_QUEUE_NAME, O_RDONLY, S_IRUSR | S_IWUSR, &atr);
 	return queue;
 }
@@ -23,7 +23,7 @@ int	msg_destroy(mqd_t queue, int delete)
 	if (mq_close(queue))
 		return 1;
 	
-	if (delete)
+	if (delete == DELETE)
 	{
 		if (mq_unlink(MSG_QUEUE_NAME))
 			return 1;
