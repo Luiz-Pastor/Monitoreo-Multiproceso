@@ -68,21 +68,23 @@ clean_tmpfile:
 clean:
 	@rm -rf obj/
 	@rm -rf /dev/mqueue/miner
+	@rm -rf /dev/shm/monitor
 
 fclean: clean
-	@rm -rf $(MINER)
+	@rm -rf $(MINER) $(MONITOR)
 
 re: fclean all
 
 #################################################
 
 MINER_ARGS=200 10
-m: miner_run
+m1: miner_run
 miner_run: 
 	@./$(MINER) $(MINER_ARGS)
 
-# v: valgrind
-# valgrind: all
-# 	@valgrind --leak-check=full ./$(MINER) $(ARGS)
+MONITOR_ARGS=10
+m2: monitor_run
+monitor_run:
+	@./$(MONITOR) $(MONITOR_ARGS)
 
 .PHONY: clean fclean re
