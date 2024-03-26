@@ -1,18 +1,27 @@
 #################################################
 MINER = miner
+MONITOR = monitor
 #################################################
 CC := cc
 CFLAGS :=-Wall -Werror -Wextra -g3 -O3
 TEMP_FILE = .flag
 #################################################
-VPATH=src/miner
+VPATH=src/common_utils:src/miner:src/monitor
 OBJ_PATH=obj
+
+COMMON_SRC=	msg_utils.c		\
+			shared_memory_utils.c
+COMMON_OBJ=$(COMMON_SRC:%.c=$(OBJ_PATH)/%.o)
 
 MINER_SRC=	miner.c			\
 			miner_error.c	\
 			miner_routine.c	\
 			pow.c
 MINER_OBJ=$(MINER_SRC:%.c=$(OBJ_PATH)/%.o)
+
+MONITOR_SRC=	monitor.c	\
+				monitor_error.c
+MONITOR_OBJ=$(MONITOR_SRC:%.c=$(OBJ_PATH)/%.o)
 #################################################
 
 YELLOW		=		\033[93;1m
@@ -25,13 +34,19 @@ CLEAR		=		\033[0m
 
 #################################################
 
-all: $(MINER)
+all: $(MINER) $(MONITOR)
 
-$(MINER): $(MINER_OBJ)
+$(MINER): $(MINER_OBJ) $(COMMON_OBJ)
 	@make -s clean_tmpfile
 	@echo "\n$(DARK_YELLOW)[ EXE ] Compiling $(YELLOW)$@$(CLEAR)"
 	@$(CC) $^ -o $@ -lpthread -lrt
-	@echo "\t$(BLUE)Program compiled!. Usage: $(CYAN)./$@$(CLEAR)\n"
+	@echo "\t$(BLUE)Program compiled!. Usage: $(CYAN)./$@ <ROUNDS> <LAG>$(CLEAR)\n"
+
+$(MONITOR): $(MONITOR_OBJ) $(COMMON_OBJ)
+	@make -s clean_tmpfile
+	@echo "\n$(DARK_YELLOW)[ EXE ] Compiling $(YELLOW)$@$(CLEAR)"
+	@$(CC) $^ -o $@ -lpthread -lrt
+	@echo "\t$(BLUE)Program compiled!. Usage: $(CYAN)./$@ <LAG>$(CLEAR)\n"
 
 
 $(OBJ_PATH)/%.o: %.c
@@ -61,14 +76,13 @@ re: fclean all
 
 #################################################
 
-ARGS=6 10
+MINER_ARGS=200 10
+m: miner_run
+miner_run: 
+	@./$(MINER) $(MINER_ARGS)
 
-r: run
-run: all
-	@./$(MINER) $(ARGS)
-
-v: valgrind
-valgrind: all
-	@valgrind --leak-check=full ./$(MINER) $(ARGS)
+# v: valgrind
+# valgrind: all
+# 	@valgrind --leak-check=full ./$(MINER) $(ARGS)
 
 .PHONY: clean fclean re
