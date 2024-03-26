@@ -14,6 +14,7 @@ t_error	save_arguments(int argc, char **argv, t_data *data)
 
 void	checker_routine(t_data *data)
 {
+	(void)data;
 	// data->shared[0].target = 23;
 	// data->shared[0].result = 10;
 
@@ -26,6 +27,7 @@ void	checker_routine(t_data *data)
 
 void	monitor_routine(t_data *data)
 {
+	(void)data;
 	// printf("{%ld - %ld}\n", data->shared[0].target, data->shared[0].result);
 
 	/* TODO: get the semaphores */
