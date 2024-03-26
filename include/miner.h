@@ -35,7 +35,6 @@ typedef struct s_args {
 } t_args;
 
 typedef struct s_miner {
-
 	pthread_t	thread;		/* Thread id */
 	long		min;		/* Min number to search */
 	long		max;		/* Max number to search */

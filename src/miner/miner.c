@@ -6,7 +6,7 @@ static t_error	save_arguments(int argc, char **argv, t_args *args)
 		return ARG_COUNT;	
 
 	args->rounds = atoll(argv[1]);
-	if (args->rounds < MIN_ROUNDS || args->rounds > POW_LIMIT)
+	if (args->rounds < MIN_ROUNDS)
 		return ARG_ROUND;
 
 	args->lag = atoll(argv[2]);

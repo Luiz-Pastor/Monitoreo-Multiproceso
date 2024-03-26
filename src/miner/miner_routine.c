@@ -89,7 +89,7 @@ int	miner_routine(t_args *arguments, mqd_t queue)
 	long			i, threads_created;
 	pid_t			pid;
 	atomic_long		f_active, f_search, target, old_target, result;
-	t_miner *miners;
+	t_miner			*miners;
 
 	
 	/* Creating the main array struct */
