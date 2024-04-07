@@ -60,4 +60,7 @@ typedef struct s_data {
 /* Arguments checker */
 int	argument_error(t_error error, char **argv);
 
+void	monitor_routine(t_data *data);
+void	checker_routine(t_data *data);
+
 #endif

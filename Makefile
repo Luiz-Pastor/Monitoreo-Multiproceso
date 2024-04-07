@@ -19,8 +19,10 @@ MINER_SRC=	miner.c			\
 			pow.c
 MINER_OBJ=$(MINER_SRC:%.c=$(OBJ_PATH)/%.o)
 
-MONITOR_SRC=	monitor.c	\
-				monitor_error.c
+MONITOR_SRC=	monitor.c			\
+				monitor_error.c		\
+				monitor_routine.c	\
+				checker_routine.c
 MONITOR_OBJ=$(MONITOR_SRC:%.c=$(OBJ_PATH)/%.o)
 #################################################
 
