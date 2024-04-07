@@ -2,9 +2,8 @@
 
 void	checker_routine(t_data *data)
 {
-	printf("Crear semaforo\n");
+	int		fd, index, flag;
 
-	int	fd;
 	/* NOTE: fillear todo para ver problemas de valgrind */
 
 	/* Create the semaphores and save it in any place that the other process can use it */
@@ -23,8 +22,8 @@ void	checker_routine(t_data *data)
 		return ;
 	}
 
-	if ((sem_init(&data->sem_shared[SEM_EMPTY], 1, 0) == -1) ||
-		sem_init(&data->sem_shared[SEM_MUTEX], 1, 0) == -1 ||
+	if ((sem_init(&data->sem_shared[SEM_EMPTY], 1, SHARED_MEMORY_BLOCKS) == -1) ||
+		sem_init(&data->sem_shared[SEM_MUTEX], 1, 1) == -1 ||
 		sem_init(&data->sem_shared[SEM_FILL], 1, 0))
 	{
 		perror("Error while inicialiting a semaphone");
@@ -39,7 +38,26 @@ void	checker_routine(t_data *data)
 		return ;
 	}
 
-	/* TODO: loop to recieve the msgs and send save it on the shared memory */
+	/* Productor */
+	index = 0;
+	flag = 1;
+	while (flag) {
+		/* The turn is taken */
+		sem_wait(&data->sem_shared[SEM_EMPTY]);
+		sem_wait(&data->sem_shared[SEM_MUTEX]);
+
+		/* Recieve the msg on the queue and saved the msg on the shaed memory */
+		msg_recieve(&data->info_shared[index], data->queue);
+		if (data->info_shared[index].target == END_VALUE &&
+			data->info_shared[index].result == END_VALUE)
+			flag = 0;
+
+		index = (index + 1) % SHARED_MEMORY_BLOCKS;
+
+		/* We leave the shift */
+		sem_post(&data->sem_shared[SEM_MUTEX]);
+		sem_post(&data->sem_shared[SEM_FILL]);
+	}
+
 	/* TODO: Free the queue and the semaphores */
-	
 }

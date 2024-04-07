@@ -2,8 +2,9 @@
 
 void	monitor_routine(t_data *data)
 {
-	printf("Leer semaforos\n");
-	int	fd;
+	int		fd, index, flag;
+	t_msg	*msg;
+
 	/* NOTE: leer todo el espacio para ver errores de valgrind */
 
 	/* TODO: get the semaphores */
@@ -22,6 +23,34 @@ void	monitor_routine(t_data *data)
 		return ;
 	}
 
-	/* TODO: loop to recieve the msg from the shared memory and check if the result is OKAY*/
+	/* Consumer */
+	index = 0;
+	flag = 1;
+	while (flag) {
+		/* The turn is taken */
+		sem_wait(&data->sem_shared[SEM_FILL]);
+		sem_wait(&data->sem_shared[SEM_MUTEX]);
+
+		msg = &data->info_shared[index];
+
+		/* Loop to recieve the msg from the shared memory and check if the result is OKAY*/
+		if (msg->target == END_VALUE &&
+			msg->result == END_VALUE)
+			flag = 0;
+		else {
+			/* Check the msg */
+			if (pow_hash(msg->result) == msg->target)
+				printf("Solution accepted: %08ld --> %08ld\n", msg->target, msg->result);
+			else
+				printf("Solution rejected: %08ld !-> %08ld\n", msg->target, msg->result);
+
+			index = (index + 1) % SHARED_MEMORY_BLOCKS;
+		}
+
+		/* The turn is leaved */
+		sem_post(&data->sem_shared[SEM_MUTEX]);
+		sem_post(&data->sem_shared[SEM_EMPTY]);
+	}
+
 	/* TODO: free all the resources */
 }

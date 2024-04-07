@@ -8,6 +8,8 @@
 # include <unistd.h>
 # include <fcntl.h>
 
+# include "pow.h"
+
 /* Sem libraries */
 # include "semaphore.h"
 # include <sys/stat.h>
