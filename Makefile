@@ -9,14 +9,14 @@ TEMP_FILE = .flag
 VPATH=src/common_utils:src/miner:src/monitor
 OBJ_PATH=obj
 
-COMMON_SRC=	msg_utils.c		\
-			shared_memory_utils.c
+COMMON_SRC=	msg_utils.c				\
+			shared_memory_utils.c	\
+			pow.c
 COMMON_OBJ=$(COMMON_SRC:%.c=$(OBJ_PATH)/%.o)
 
 MINER_SRC=	miner.c			\
 			miner_error.c	\
-			miner_routine.c	\
-			pow.c
+			miner_routine.c
 MINER_OBJ=$(MINER_SRC:%.c=$(OBJ_PATH)/%.o)
 
 MONITOR_SRC=	monitor.c			\
