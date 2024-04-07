@@ -8,6 +8,11 @@
 # include <unistd.h>
 # include <fcntl.h>
 
+/* Sem libraries */
+# include "semaphore.h"
+# include <sys/stat.h>
+# include <sys/wait.h>
+
 /* Include the msg functions */
 # include "msg_utils.h"
 
@@ -16,6 +21,15 @@
 
 /* Add the env variables */
 # include "config.h"
+
+# define SEM_SHARED_MEMORY_NAME	"/sem_memory"
+
+# define SEM_EMPTY	0
+# define SEM_MUTEX	1
+# define SEM_FILL	2
+
+# define MSG_BLOCK_LENGTH (sizeof(t_msg) * SHARED_MEMORY_BLOCKS)
+# define SEM_BLOCK_LENGTH (sizeof(sem_t) * 3)
 
 typedef enum {
 	NONE = 0,
@@ -32,7 +46,13 @@ typedef struct s_data {
 	long	lag;
 
 	/* Shared memory */
-	t_msg	*shared;
+	t_msg	*info_shared;
+
+	/* Sem zone */
+	sem_t	*sem_shared;
+
+	/* Msg queue */
+	mqd_t	queue;
 
 
 } t_data;

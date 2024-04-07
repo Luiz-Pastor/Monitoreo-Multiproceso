@@ -1,15 +1,13 @@
 # include "../../include/shared_memory_utils.h"
 # include <stdio.h>
 
-# define MAX_BLOCK_LENGTH (sizeof(t_msg) * SHARED_MEMORY_BLOCKS)
-
-int	shared_memory_init(int *whoami)
+int	shared_memory_init(int *whoami, char *name, size_t length)
 {
 	int	fd;
 	int	prev_errno;
 
 	/* Tried to create the block */
-	fd = shm_open(SHARED_MEMORY_NAME, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+	fd = shm_open(name, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
 	if (fd != -1)
 	{
 		/* The process is the checker */
@@ -17,10 +15,10 @@ int	shared_memory_init(int *whoami)
 			*whoami = CHECKER;
 
 		/* The block has been created, so the size has to be put */
-		if (ftruncate(fd, MAX_BLOCK_LENGTH))
+		if (ftruncate(fd, length))
 		{
 			prev_errno = errno;
-			shared_memory_destroy(fd, DELETE);
+			shared_memory_destroy(fd, name, DELETE);
 			errno = prev_errno;
 			return -1;
 		}
@@ -33,34 +31,49 @@ int	shared_memory_init(int *whoami)
 		return -1;
 
 	/* The block was created and exists, so we have to create a connection */
-	fd = shm_open(SHARED_MEMORY_NAME, O_RDONLY, S_IRUSR | S_IWUSR);
+	fd = shm_open(name, O_RDONLY, S_IRUSR | S_IWUSR);
 	if (whoami)
 		*whoami = MONITOR;
 	return fd;
 }
 
-int	shared_memory_destroy(int fd, int delete)
+int	shared_memory_destroy(int fd, char *name, int delete)
 {
 	if (close(fd))
 		return 1;
 
 	if (delete == DELETE)
 	{
-		if (shm_unlink(SHARED_MEMORY_NAME))
+		if (shm_unlink(name))
 			return 1;
 	}
 
 	return 0;
 }
 
-void	*shared_memory_map(int fd, int whoami)
+void	*shared_memory_map(int fd, size_t length, int whoami)
 {
 	int	perm = (whoami == CHECKER ? PROT_WRITE : PROT_READ);
 
-	return mmap(NULL, MAX_BLOCK_LENGTH, perm, MAP_SHARED, fd, 0);
+	switch (whoami)
+	{
+	case CHECKER:
+		perm = PROT_WRITE;
+		break;
+	
+	case MONITOR:
+		perm = PROT_READ;
+		break;
+
+	default:
+		perm = PROT_READ | PROT_WRITE;
+		break;
+	}
+
+	return mmap(NULL, length, perm, MAP_SHARED, fd, 0);
 }
 
-int	shared_memory_munmap(void *start)
+int	shared_memory_munmap(void *start, size_t length)
 {
-	return munmap(start, MAX_BLOCK_LENGTH);
+	return munmap(start, length);
 }

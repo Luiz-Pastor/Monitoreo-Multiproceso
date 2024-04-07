@@ -69,6 +69,7 @@ clean:
 	@rm -rf obj/
 	@rm -rf /dev/mqueue/miner
 	@rm -rf /dev/shm/monitor
+	@rm -rf /dev/shm/sem_memory
 
 fclean: clean
 	@rm -rf $(MINER) $(MONITOR)
@@ -77,7 +78,7 @@ re: fclean all
 
 #################################################
 
-MINER_ARGS=200 10
+MINER_ARGS=1 10
 m1: miner_run
 miner_run: 
 	@./$(MINER) $(MINER_ARGS)
@@ -85,6 +86,6 @@ miner_run:
 MONITOR_ARGS=10
 m2: monitor_run
 monitor_run:
-	@./$(MONITOR) $(MONITOR_ARGS)
+	@valgrind --leak-check=full ./$(MONITOR) $(MONITOR_ARGS)
 
 .PHONY: clean fclean re

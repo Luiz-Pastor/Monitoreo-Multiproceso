@@ -14,12 +14,43 @@ t_error	save_arguments(int argc, char **argv, t_data *data)
 
 void	checker_routine(t_data *data)
 {
-	(void)data;
-	// data->shared[0].target = 23;
-	// data->shared[0].result = 10;
+	printf("Crear semaforo\n");
 
-	/* TODO: create the semaphores and save it in any place that the other process can use it */
+	int	fd;
+	/* NOTE: fillear todo para ver problemas de valgrind */
+
+	/* Create the semaphores and save it in any place that the other process can use it */
+	fd = shared_memory_init(NULL, SEM_SHARED_MEMORY_NAME, SEM_BLOCK_LENGTH);
+	if (fd < 0)
+	{
+		perror("Error while creating/opening the sempaphore shared memory");
+		return ;
+	}
+
+	data->sem_shared = shared_memory_map(fd, SEM_BLOCK_LENGTH, ALL);
+	shared_memory_destroy(fd, SEM_SHARED_MEMORY_NAME, NO_DELETE);
+	if (!data->sem_shared)
+	{
+		perror("Error mapping the shared memory");
+		return ;
+	}
+
+	if ((sem_init(&data->sem_shared[SEM_EMPTY], 1, 0) == -1) ||
+		sem_init(&data->sem_shared[SEM_MUTEX], 1, 0) == -1 ||
+		sem_init(&data->sem_shared[SEM_FILL], 1, 0))
+	{
+		perror("Error while inicialiting a semaphone");
+		return ;
+	}
+
 	/* TODO: open the msg queue */
+	data->queue = msg_init(CHECKER);
+	if (data->queue == (mqd_t) -1)
+	{
+		perror("Error opening the msg queue");
+		return ;
+	}
+
 	/* TODO: loop to recieve the msgs and send save it on the shared memory */
 	/* TODO: Free the queue and the semaphores */
 	
@@ -27,10 +58,26 @@ void	checker_routine(t_data *data)
 
 void	monitor_routine(t_data *data)
 {
-	(void)data;
-	// printf("{%ld - %ld}\n", data->shared[0].target, data->shared[0].result);
+	printf("Leer semaforos\n");
+	int	fd;
+	/* NOTE: leer todo el espacio para ver errores de valgrind */
 
 	/* TODO: get the semaphores */
+	fd = shared_memory_init(NULL, SEM_SHARED_MEMORY_NAME, SEM_BLOCK_LENGTH);
+	if (fd < 0)
+	{
+		perror("Error while creating/opening the sempaphore shared memory");
+		return ;
+	}
+
+	data->sem_shared = shared_memory_map(fd, SEM_BLOCK_LENGTH, ALL);
+	shared_memory_destroy(fd, SEM_SHARED_MEMORY_NAME, DELETE);
+	if (!data->sem_shared)
+	{
+		perror("Error mapping the shared memory");
+		return ;
+	}
+
 	/* TODO: loop to recieve the msg from the shared memory and check if the result is OKAY*/
 	/* TODO: free all the resources */
 }
@@ -53,35 +100,35 @@ int main(int argc, char *argv[])
 		Open the shared memory. Also set the argument the type of process (CHECKER or MONITOR).
 		If the memory block is open correctly, it is mapped to the process.
 	*/
-	fd = shared_memory_init(&data.whoami);
+	fd = shared_memory_init(&data.whoami, SHARED_MEMORY_NAME, MSG_BLOCK_LENGTH);
 	if (fd == -1)
 	{
 		perror("Error while creating/opening the shared memory");
 		return 1;
 	}
 
-	data.shared = shared_memory_map(fd, data.whoami);
-	if (data.shared == MAP_FAILED)
+	data.info_shared = shared_memory_map(fd, MSG_BLOCK_LENGTH, data.whoami);
+	if (data.info_shared == MAP_FAILED)
 	{
 		perror("Error mapping the shared memory");
-		shared_memory_destroy(fd, DELETE);
+		shared_memory_destroy(fd, SHARED_MEMORY_NAME, DELETE);
 		return (1);
 	}
 
 	/* Process identification */
 	if (data.whoami == CHECKER)
 	{
-		shared_memory_destroy(fd, NO_DELETE);
+		shared_memory_destroy(fd, SHARED_MEMORY_NAME, NO_DELETE);
 		checker_routine(&data);
 	}
 	else
 	{
-		shared_memory_destroy(fd, DELETE);
+		shared_memory_destroy(fd, SHARED_MEMORY_NAME, DELETE);
 		monitor_routine(&data);
 	}
 
 	/* Resource release */
-	if (shared_memory_munmap(data.shared))
+	if (shared_memory_munmap(data.info_shared, MSG_BLOCK_LENGTH))
 	{
 		perror("Error deleting the memory map");
 		return 1;

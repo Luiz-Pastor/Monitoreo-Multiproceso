@@ -25,6 +25,7 @@
 
 /* PROCESS IDS */
 # define MINER		0
+# define ALL		0
 # define MONITOR	1
 # define CHECKER	2
 

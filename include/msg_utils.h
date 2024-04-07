@@ -11,10 +11,10 @@ typedef struct e_msg {
 	long	result;
 } t_msg;
 
-int	msg_init(int op_mode);
-int	msg_destroy(mqd_t queue, int delete);
+mqd_t	msg_init(int op_mode);
+int		msg_destroy(mqd_t queue, int delete);
 
-int	msg_send(long target, long result, mqd_t queue);
-int	msg_recieve(t_msg *msg, mqd_t queue);
+int		msg_send(long target, long result, mqd_t queue);
+int		msg_recieve(t_msg *msg, mqd_t queue);
 
 #endif

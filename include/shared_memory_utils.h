@@ -11,10 +11,10 @@
 # include <fcntl.h>
 # include <errno.h>
 
-int	shared_memory_init(int *whoami);
-int	shared_memory_destroy(int fd, int delete);
+int	shared_memory_init(int *whoami, char *name, size_t length);
+int	shared_memory_destroy(int fd, char *name, int delete);
 
-void	*shared_memory_map(int fd, int whoami);
-int		shared_memory_munmap(void *start);
+void	*shared_memory_map(int fd, size_t length, int whoami);
+int		shared_memory_munmap(void *start, size_t length);
 
 #endif
