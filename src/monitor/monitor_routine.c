@@ -4,8 +4,7 @@ void	monitor_routine(t_data *data)
 {
 	int		fd, index, flag;
 	t_msg	*msg;
-
-	/* NOTE: leer todo el espacio para ver errores de valgrind */
+	pid_t	pid;
 
 	/* TODO: get the semaphores */
 	fd = shared_memory_init(NULL, SEM_SHARED_MEMORY_NAME, SEM_BLOCK_LENGTH);
@@ -22,6 +21,10 @@ void	monitor_routine(t_data *data)
 		perror("Error mapping the shared memory");
 		return ;
 	}
+
+	/* Print the start msg */
+	pid = getpid();
+	printf("[%d] Printing blocks...\n", pid);
 
 	/* Consumer */
 	index = 0;
@@ -52,5 +55,6 @@ void	monitor_routine(t_data *data)
 		sem_post(&data->sem_shared[SEM_EMPTY]);
 	}
 
-	/* TODO: free all the resources */
+	/* Print the end msg */
+	printf("[%d] Finishing\n", pid);
 }

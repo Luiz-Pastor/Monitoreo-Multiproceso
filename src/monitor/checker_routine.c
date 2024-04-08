@@ -3,8 +3,7 @@
 void	checker_routine(t_data *data)
 {
 	int		fd, index, flag;
-
-	/* NOTE: fillear todo para ver problemas de valgrind */
+	pid_t	pid;
 
 	/* Create the semaphores and save it in any place that the other process can use it */
 	fd = shared_memory_init(NULL, SEM_SHARED_MEMORY_NAME, SEM_BLOCK_LENGTH);
@@ -38,6 +37,10 @@ void	checker_routine(t_data *data)
 		return ;
 	}
 
+	/* Printed the start msg */
+	pid = getpid();
+	printf("[%d] Checking blocks...\n", pid);
+
 	/* Productor */
 	index = 0;
 	flag = 1;
@@ -59,6 +62,7 @@ void	checker_routine(t_data *data)
 		sem_post(&data->sem_shared[SEM_FILL]);
 	}
 
-	/* TODO: Free the queue and the semaphores */
+	/* Print stop msg and free the queue and the semaphores */
+	printf("[%d] Finishing\n", pid);
 	msg_destroy(data->queue, DELETE);
 }
