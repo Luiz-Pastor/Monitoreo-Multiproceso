@@ -60,6 +60,9 @@ void	checker_routine(t_data *data)
 		/* We leave the shift */
 		sem_post(&data->sem_shared[SEM_MUTEX]);
 		sem_post(&data->sem_shared[SEM_FILL]);
+
+		/* LAG */
+		usleep(data->lag);
 	}
 
 	/* Print stop msg and free the queue and the semaphores */

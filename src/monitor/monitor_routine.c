@@ -53,6 +53,9 @@ void	monitor_routine(t_data *data)
 		/* The turn is leaved */
 		sem_post(&data->sem_shared[SEM_MUTEX]);
 		sem_post(&data->sem_shared[SEM_EMPTY]);
+
+		/* LAG */
+		usleep(data->lag);
 	}
 
 	/* Print the end msg */
