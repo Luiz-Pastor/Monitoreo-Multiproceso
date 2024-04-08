@@ -60,4 +60,5 @@ void	checker_routine(t_data *data)
 	}
 
 	/* TODO: Free the queue and the semaphores */
+	msg_destroy(data->queue, DELETE);
 }
