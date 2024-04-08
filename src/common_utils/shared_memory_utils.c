@@ -31,7 +31,7 @@ int	shared_memory_init(int *whoami, char *name, size_t length)
 		return -1;
 
 	/* The block was created and exists, so we have to create a connection */
-	fd = shm_open(name, O_RDONLY, S_IRUSR | S_IWUSR);
+	fd = shm_open(name, O_RDWR, S_IRUSR | S_IWUSR);
 	if (whoami)
 		*whoami = MONITOR;
 	return fd;
