@@ -79,13 +79,11 @@ re: fclean all
 #################################################
 
 MINER_ARGS=1 10
-m1: miner_run
 miner_run: 
 	@./$(MINER) $(MINER_ARGS)
 
 MONITOR_ARGS=10
-m2: monitor_run
 monitor_run:
-	@valgrind --leak-check=full ./$(MONITOR) $(MONITOR_ARGS)
+	@./$(MONITOR) $(MONITOR_ARGS)
 
 .PHONY: clean fclean re
