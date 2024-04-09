@@ -1,5 +1,38 @@
 #include "../../include/monitor.h"
 
+/**
+ * @brief	Function ot print a error message
+ * 
+ * @param	error Error type. Cases defined in `t_error` enum,
+ * 			defined on `monitor.h`
+ * @param	argv Arguments
+*/
+int	argument_error(t_error error, char **argv)
+{
+	switch (error)
+	{
+		case ARG_COUNT:
+			printf("Argument error!\n\tUsage: %s <LAG>\n", argv[0]);
+			break;
+		
+		case ARG_LAG:
+			printf("Incorrect time of cooldown! (\"%s\")\n", argv[1]);
+
+		default:
+			break;
+	}
+	return 1;
+}
+
+/**
+ * @brief	It saves the arguments data
+ * 
+ * @param	argc Number of arguments
+ * @param	argv Arguments
+ * @param	data Pointer to the variable in which the info will be saved
+ * 
+ * @return	`NONE` on success; otherwise, the error value
+*/
 t_error	save_arguments(int argc, char **argv, t_data *data)
 {
 	if (argc != 2)

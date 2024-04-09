@@ -1,5 +1,8 @@
 #include "../../include/monitor.h"
 
+/**
+ * Function that executes the routine of the checker proccess
+*/
 void	checker_routine(t_data *data)
 {
 	int		fd, index, flag;
@@ -29,7 +32,7 @@ void	checker_routine(t_data *data)
 		return ;
 	}
 
-	/* TODO: open the msg queue */
+	/* Open the msg queue */
 	data->queue = msg_init(CHECKER);
 	if (data->queue == (mqd_t) -1)
 	{

@@ -1,6 +1,8 @@
 # include "../../include/shared_memory_utils.h"
-# include <stdio.h>
 
+/**
+ * It inits a shared memory block. Also, it decide what type of process we are in
+*/
 int	shared_memory_init(int *whoami, char *name, size_t length)
 {
 	int	fd;
@@ -37,6 +39,9 @@ int	shared_memory_init(int *whoami, char *name, size_t length)
 	return fd;
 }
 
+/**
+ * Function to deletes a shared memory block. It also can remove the file (unlink it)
+*/
 int	shared_memory_destroy(int fd, char *name, int delete)
 {
 	if (close(fd))
@@ -51,6 +56,9 @@ int	shared_memory_destroy(int fd, char *name, int delete)
 	return 0;
 }
 
+/**
+ * It map a block of memory, by it file descriptor
+*/
 void	*shared_memory_map(int fd, size_t length, int whoami)
 {
 	int	perm = (whoami == CHECKER ? PROT_WRITE : PROT_READ);
@@ -73,6 +81,9 @@ void	*shared_memory_map(int fd, size_t length, int whoami)
 	return mmap(NULL, length, perm, MAP_SHARED, fd, 0);
 }
 
+/**
+ * If delete a block of memory mapped previously
+*/
 int	shared_memory_munmap(void *start, size_t length)
 {
 	return munmap(start, length);

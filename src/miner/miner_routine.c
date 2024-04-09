@@ -1,5 +1,14 @@
 #include "../../include/miner.h"
 
+/**
+ * @brief	Function to free al the memory used, and wait for the threads
+ * 
+ * @param	threads_created Number of threads created and used
+ * @param	miners Array of `t_miner`, with `threads_created` positions used
+ * @param	msg String error. In case of not being null, the message will be printed
+ * 
+ * @return	1 if `msg` is not null, 0 otherwise
+*/
 static int	end_search(long threads_created, t_miner *miners, char *msg)
 {
 	long	i;
@@ -17,6 +26,13 @@ static int	end_search(long threads_created, t_miner *miners, char *msg)
 	return msg ? 1 : 0;
 }
 
+/**
+ * @brief	Threads routine, function to search a target until the `f_active` flag is down
+ * 
+ * @param	arg `t_miner*` casted to `void*`
+ * 
+ * @return	`NULL` always
+*/
 static void	*miner_search(void *arg) {
 	long	i;
 	t_miner	*miner;
@@ -43,6 +59,18 @@ static void	*miner_search(void *arg) {
 	return (NULL);
 }
 
+/**
+ * @brief	It inits all the possible miners, trying to create `MAX_THREADS`
+ * 			threads (defined on `config.h`)
+ * 
+ * @param	miners Array of miners
+ * @param	f_active Pointer to the active flag
+ * @param	f_search Pointer to the search active flag
+ * @param	target Pointer to the target variable
+ * @param	result Pointer to the result variable
+ * 
+ * @return	Number of threads created (0 in case of error)
+*/
 static long	init_miners(t_miner *miners,
 					atomic_long *f_active, atomic_long *f_search, atomic_long *target, atomic_long *result)
 {
@@ -84,6 +112,9 @@ static long	init_miners(t_miner *miners,
 	return threads_created;
 }
 
+/**
+ * Miner routine
+*/
 int	miner_routine(t_args *arguments, mqd_t queue)
 {
 	long			i, threads_created;

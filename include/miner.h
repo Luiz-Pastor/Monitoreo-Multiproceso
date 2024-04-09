@@ -45,10 +45,12 @@ typedef struct s_miner {
 	atomic_long		*result;	/* Result of the search */
 } t_miner;
 
-/* Argument error manage */
-int	arguments_error(t_error error, char **argv);
-
-/* Function loop to found targets */
+/**
+ * @brief	Miner routine
+ * 
+ * @param	arguments Variable with the arguments data
+ * @param	queue Message queue file descriptor
+*/
 int	miner_routine(t_args *arguments, mqd_t queue);
 
 #endif

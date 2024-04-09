@@ -24,8 +24,6 @@
 /* Add the env variables */
 # include "config.h"
 
-# define SEM_SHARED_MEMORY_NAME	"/sem_memory"
-
 # define SEM_EMPTY	0
 # define SEM_MUTEX	1
 # define SEM_FILL	2
@@ -55,14 +53,21 @@ typedef struct s_data {
 
 	/* Msg queue */
 	mqd_t	queue;
-
-
 } t_data;
 
-/* Arguments checker */
-int	argument_error(t_error error, char **argv);
 
+/**
+ * @brief	Function that executes the routine of the monitor proccess
+ * 
+ * @param	data Pointer to the struct with all the data
+*/
 void	monitor_routine(t_data *data);
+
+/**
+ * @brief	Function that executes the routine of the checker proccess
+ * 
+ * @param	data Pointer to the struct with all the data
+*/
 void	checker_routine(t_data *data);
 
 #endif

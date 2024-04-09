@@ -11,7 +11,7 @@
 # define POW_LIMIT		9997697			/*!< Maximum number for the hash result. */
 
 /* MONITOR */
-
+# define SEM_SHARED_MEMORY_NAME	"/sem_memory"	/*!< Name of the shared memory of semaphore */
 
 /* MSG QUEUE */
 # define MSG_QUEUE_NAME	"/miner"		/*!< Name of the message queue */

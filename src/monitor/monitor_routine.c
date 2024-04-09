@@ -1,12 +1,15 @@
 #include "../../include/monitor.h"
 
+/**
+ * Function that executes the routine of the monitor proccess
+*/
 void	monitor_routine(t_data *data)
 {
 	int		fd, index, flag;
 	t_msg	*msg;
 	pid_t	pid;
 
-	/* TODO: get the semaphores */
+	/* Get the semaphores block and map it */
 	fd = shared_memory_init(NULL, SEM_SHARED_MEMORY_NAME, SEM_BLOCK_LENGTH);
 	if (fd < 0)
 	{
